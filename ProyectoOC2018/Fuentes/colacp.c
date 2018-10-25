@@ -26,10 +26,10 @@ TNodo buscarNodo(TColaCP cola,int x){
     else /** ESTO ME PARECE QUE ESTA MAL PORQUE SOLO ME ANDARIA CON 3 ELEMENTOS. */
     {
         pos = buscarNodo(cola,x/2); /** ES UNA LLAMADA RECURSIVA A FUNCION ! ASIGNAR LA VARIABLE SINO LA PIERDO. ! */
-        //printf("%d asda\n",pos != NULL);
+
         if  (x % 2 == 0)
         {
-            //printf("pos %d \n",*(int*)pos->entrada->clave);
+
             pos = pos->hijo_izquierdo;
         }
         else
@@ -49,18 +49,20 @@ void intercambiar(TNodo hijo, TNodo padre){
 void burbujeoHaciaArriba(TColaCP cola, TNodo nuevo){
     if(nuevo != cola->raiz)
     {
-         //printf("nuevo->padre->entrada->clave = %d\n",*(int*)nuevo->padre->entrada->clave);
-         //printf("nuevo->entrada->clave = %d\n",*(int*)nuevo->entrada->clave);
-       // printf(*(int*)(nuevo->entrada->clave));
+
         int i = cola->comparador(nuevo->entrada,nuevo->padre->entrada);
         if( i == 1 ) // ya que si son iguales tambien debo hacer el burbujeo, ESTO PARA MIN HEAP YA QUE LA FUNCION DE COMPARACION SERIA FASCENDENTE Y TENGO QUE INTERCAMBIAR CUANDO ES -1
         {
             intercambiar(nuevo,nuevo->padre);
-            //printf("%d hola\n",*(int*)nuevo->padre->entrada->clave);
             burbujeoHaciaArriba(cola,nuevo->padre);
         }
 
     }
+
+}
+
+/** Este metodo provocara que el heap no rompa la propiedad de orden que debe cumplir */
+void downHeap(TColaCP cola, TNodo raiz){
 
 }
 
@@ -90,8 +92,8 @@ int cp_insertar(TColaCP cola, TEntrada entr){
     {
         TNodo padreNuevo = POS_NULA;
         int numeroNodoAInsertar = cola->cantidad_elementos+1;
-        padreNuevo = buscarNodo(cola,(numeroNodoAInsertar)/2); /** BUSCO A MI PADRE, PORQUE NUMERONODOAINSERTAR NO EXISTE TODAVIA */
-        /** DEBO FIJARME LA PARIDAD DEL PADRE.. SI ES PAR, ES HIJO IZQUIERDO, SI ES IMPAR ES HIJO DERECHO */
+        padreNuevo = buscarNodo(cola,(numeroNodoAInsertar)/2); /** Este metodo buscara la posicion del padre del nuevo nodo a ser insertado */
+
         TNodo nuevo = malloc(sizeof(struct nodo));
         nuevo->padre = padreNuevo;
 
@@ -99,36 +101,53 @@ int cp_insertar(TColaCP cola, TEntrada entr){
         nuevo->hijo_izquierdo = POS_NULA;
         nuevo->hijo_derecho = POS_NULA;
 
+        if( padreNuevo->hijo_izquierdo == POS_NULA)
+        {
+            padreNuevo->hijo_izquierdo = nuevo;
+        }else
+        {
+            padreNuevo->hijo_derecho = nuevo;
+        }
 
+        burbujeoHaciaArriba(cola,nuevo);
 
-
-        //printf("%d \n",padreNuevo != NULL);
-            if( padreNuevo->hijo_izquierdo == POS_NULA)
-            {
-                padreNuevo->hijo_izquierdo = nuevo;
-            }else
-            {
-                padreNuevo->hijo_derecho = nuevo;
-            }
-
-
-            burbujeoHaciaArriba(cola,nuevo);
-
-
-        //printf("Padre nuevo en insertar es : %d\n",*(int*)padreNuevo->entrada->clave);
-
-           cola->cantidad_elementos = cola->cantidad_elementos + 1 ;
-
+        cola->cantidad_elementos = cola->cantidad_elementos + 1 ;
 
     }
-
-
-
 
     return TRUE;
 }
 
-TEntrada cp_eliminar(TColaCP cola);
+TEntrada cp_eliminar(TColaCP cola){
+    if(cola == POS_NULA)
+    {
+        printf("Error cola NULA al intentar eliminar \n");
+        exit(CCP_NO_INI);
+    }
+
+    TNodo w = POS_NULA;
+    TEntrada entradaAEliminar = NULL;
+    entradaAEliminar = cola->raiz->entrada; /** ME GUARDO EN UNA VARIABLE AUXILIAR PARA NO PERDER LA ENTRADA QUE QUIERO ELIMINAR */
+    w = buscarNodo(cola,cola->cantidad_elementos); /** w es el ultimo nodo del arbol mas profundo */
+    cola->raiz->entrada = w->entrada;
+
+    TNodo padreDeW = w->padre;
+    if(padreDeW->hijo_izquierdo == w)
+        padreDeW->hijo_izquierdo = NULL;
+    else
+        padreDeW->hijo_derecho = NULL;
+
+    w->padre = POS_NULA;
+    free(w); /** A ESTA ALTURA LO QUE HICE FUE CAMBIAR LA ENTRADA DEL ULTIMO NODO EN LA RAIZ Y LUEGO ELIMINAR EL ULTIMO NODO.FALTA BURBUJEAR HACIA ABAJO */
+
+
+    downHeap(cola,cola->raiz); /** EL ARBOL ESTA COMPLETO PERO PODRIA ESTAR VIOLANDO LA PROPIEDAD DE ORDEN DEL HEAP */
+
+
+
+    cola->cantidad_elementos = cola->cantidad_elementos - 1;
+    return entradaAEliminar;
+}
 
 
 int cp_destruir(TColaCP cola);

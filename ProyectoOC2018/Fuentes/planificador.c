@@ -57,7 +57,7 @@ int fDescendente(TEntrada a,TEntrada b){
 
 void mostrarLista(TLista *lista){
     TPosicion pos = *lista;
-    int *pElemento = pos;
+    int *pElemento = (int *)pos;
     while(pos != NULL)
     {
         pElemento = pos->elemento;
@@ -163,7 +163,7 @@ int main(){
 
 
     /** TDA COLA CON PRIORIDAD */
-    printf("\n\nTDA Cola Con Prioridad \n\n");
+    printf("\n\nTDA Cola Con Prioridad \n");
     int numero1 = 10;
     int numero2 = 12;
     int numero3 = 14;
@@ -181,7 +181,7 @@ int main(){
     TValor valor2 = &s;
 
     TClave clave3 = &numero3;
-    TValor valor3 = &d;
+    TValor valor3 = &h;
 
     TClave clave4 = &numero4;
     TClave valor4 = &p;
@@ -205,7 +205,6 @@ int main(){
     cuartaEntrada->clave = clave4;
     cuartaEntrada->valor = valor4;
 
-    printf("Clave de la primer entrada : %d\n",(*(int*)primerEntrada->clave));
    int funcionDeComparacionAscendente = fAscendente(primerEntrada,segundaEntrada); /** ACA ES NECESARIO MANDARLE & ? NO VEO LA DIFERENCIA */
 
    printf("El valor de la funcion de comparacion es : %d\n",funcionDeComparacionAscendente);
@@ -214,24 +213,39 @@ int main(){
 
 
     int (*pFuncion)(void*,void*) = fAscendente;
-    int j = pFuncion(primerEntrada,segundaEntrada);
+    //int j = pFuncion(primerEntrada,segundaEntrada);
 
     TColaCP ccp = crear_cola_cp(pFuncion); /** FAscendente para minHeap, es necesario POR QUE EL WARNING? */
     /** por que los 3 warnings? uno porque no use la variable todavia ccp..*/
    // int *(pointerFunction) = ccp->f;
     //fAscendente(primerEntrada,segundaEntrada);
     //printf("%d El valor del puntero a la funcion es : \n",*pointerFunction);
-    int x = cp_insertar(ccp,primerEntrada);
-    int y = cp_insertar(ccp,segundaEntrada);
-    int z = cp_insertar(ccp,tercerEntrada);
-    int w = cp_insertar(ccp,cuartaEntrada);
+    cp_insertar(ccp,primerEntrada);
+    cp_insertar(ccp,segundaEntrada);
+    cp_insertar(ccp,tercerEntrada);
+    cp_insertar(ccp,cuartaEntrada);
+    printf("La cantidad de elementos en la cola con prioridad es : %d\n",ccp->cantidad_elementos);
+
+    /** MOSTRANDO LOS ELEMENTOS INSERTADOS EN LA CCP EN PRE ORDEN */
+    printf("CCP LUEGO DE INSERTAR \n");
+    mostrarCCP(ccp,ccp->raiz);
+
+
+    /** TESTEANDO METODO ELIMINAR DE CCP  */
+
+
+    TEntrada eliminado = cp_eliminar(ccp);
+
+    printf("\nLuego de eliminar el elemento %d. CCP es: \n",*(int*)eliminado->clave);
+
+
+    mostrarCCP(ccp,ccp->raiz);
+
     printf("La cantidad de elementos en la cola con prioridad es : %d\n",ccp->cantidad_elementos);
 
 
 
-    /** PROBANDO LOS NODOS EN LA COLA CON PRIORIDAD */
 
-    mostrarCCP(ccp,ccp->raiz);
 
 
 
