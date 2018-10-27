@@ -61,11 +61,67 @@ void burbujeoHaciaArriba(TColaCP cola, TNodo nuevo){
 
 }
 
-/** Este metodo provocara que el heap no rompa la propiedad de orden que debe cumplir */
-void downHeap(TColaCP cola, TNodo raiz){
-
+int tieneHijoIzquierdo(TNodo n)
+{
+    return n->hijo_izquierdo != POS_NULA;
 }
 
+int tieneHijoDerecho(TNodo n){
+    return n->hijo_derecho != POS_NULA;
+}
+
+int esHoja(TNodo n){
+    return (n->hijo_izquierdo == POS_NULA && n->hijo_derecho == POS_NULA);
+}
+
+/** Este metodo provocara que el heap no rompa la propiedad de orden que debe cumplir
+*   El parametro r hace referencia a la raiz del heap, la entrada de este es lo que valia el ultimo nodo
+*   Si la cola tiene solo un nodo (la raiz),entonces la propiedad de orden esta trivialmente satisfecha
+*/
+void downHeap(TColaCP cola, TNodo r)
+{
+
+    if(r != NULL)
+    {
+        if(!tieneHijoDerecho(r))
+        {
+            TNodo s = r->hijo_izquierdo;
+            if (cola->comparador(r->entrada,s->entrada) == -1) /** Rompe la propiedad del orden del heap */
+                intercambiar(r->entrada,s->entrada);
+        }else
+        {
+            if(tieneHijoIzquierdo(r) && tieneHijoDerecho(r))
+            {   TNodo s = POS_NULA;
+                if (cola->comparador(r->hijo_izquierdo->entrada,r->hijo_derecho->entrada) == 1) /** Me interesa el hijo de la raiz con menor entrada(MAS PRIORIDAD) */
+                {
+                     s = r->hijo_izquierdo;
+                }else
+                {
+                     s = r->hijo_derecho;
+                }
+
+
+                if(cola->comparador(r->entrada,s->entrada) == -1) /** DEBE INTERCAMBIARSE CON EL HIJO IZQUIERDO O DERECHO */
+                {
+                    intercambiar(r->entrada,s->entrada);
+                    downHeap(cola,s);
+
+                }else
+                {
+                if  (cola->comparador(r->entrada,s->entrada) == 1)
+                {
+                    intercambiar(r->entrada,s->entrada);
+                    downHeap(cola,s);
+                }
+
+
+                }
+
+            }
+        }
+    }
+
+}
 
 
 int cp_insertar(TColaCP cola, TEntrada entr){
@@ -149,7 +205,7 @@ TEntrada cp_eliminar(TColaCP cola){
     return entradaAEliminar;
 }
 
-
+/** DEBO DESTRUIR EN POSORDEN */
 int cp_destruir(TColaCP cola);
 
 int cp_size(TColaCP cola){

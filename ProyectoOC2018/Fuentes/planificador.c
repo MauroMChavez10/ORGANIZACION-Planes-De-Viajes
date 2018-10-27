@@ -92,6 +92,113 @@ void mostrarCCP(TColaCP cola,TNodo raiz){
 
 
 }
+/** La variable i identifica que ciudad esta siendo copiado su nombre */
+void copiaNombreCiudad(char c[],int i,TCiudad nueva)
+{   nueva = malloc(sizeof(struct ciudad)); /** Me esta creando una ciudad y copiando su nombre */
+    int cantidadCiudades = strlen(c) + 1;
+    nueva[i].nombre = malloc(cantidadCiudades* sizeof(struct ciudad));
+
+    if(nueva[i].nombre == NULL)
+    {
+        printf("Fue imposible reserva memoria ");
+        exit(FALSE);
+    }
+
+    strcpy(nueva[i].nombre,c);
+}
+
+/** Este metodo vaciara el nombre de las ciudades para que no se pisen cada vez que se lea una nueva ciudad en el archivo */
+void vaciar(char c[])
+{
+    int i ;
+
+    for(i = 0 ; i<50 ; i++)
+    {
+        c[i] = '\0';
+    }
+
+
+}
+
+/** COMO EL ORIGEN TIENE OTRA ESTRUCTURA, DISTINTA A LAS DEMAS CIUDADES DEBO RECORRERLA DE OTRA FORMA */
+void leerOrigen(char cadena[],FILE *f,char c,TCiudad origen)
+{
+
+    if(!feof(f))
+    {
+        origen = malloc(sizeof(struct ciudad));
+        c = fgetc(f);
+        origen->pos_x = c;
+        fgetc(f); // PISO EL PUNTO Y COMA
+        c = fgetc(f);
+        origen->pos_y = c;
+        fgets(cadena,2,f); /** consume el salto de linea guarda que tiene el caracter '/0' al final despues del salto de linea*/
+    }
+}
+
+
+/** leerArchivo recorrera todo el archivo, en cada linea del mismo ira creando una ciudad e insertandola
+    en una lista. Al finalizar se podra tener una lista con todas las ciudades y sus respectivas posiciones x e y
+ */
+
+TLista leerArchivo()
+{
+
+    TLista lista = crear_lista();
+    TPosicion posicion = l_primera(lista);
+    TCiudad origen = malloc(sizeof(struct ciudad));
+    TCiudad nuevaCiudad = malloc(sizeof(struct ciudad));
+    //char *ruta = malloc(150*sizeof(char));
+    char caracterCiudad[50];
+    int i,j ;
+    char c;
+    FILE *f;
+    f = fopen("viajes.txt","rt");
+
+   // printf("Por favor ingrese la ruta donde se encuentra el archivo \n");
+    //gets(ruta);
+
+
+    if (f == NULL)
+    {
+        printf("Error al tratar de leer el archivo");
+        exit(1);
+    }
+
+    leerOrigen(caracterCiudad,f,c,origen);
+
+    for(i = 0 ; i<(!feof(f)); i++)
+    {
+        vaciar(caracterCiudad);
+        c = '0';
+        for( j = 0 ; c != ';' ; j++)
+        {
+            c = fgetc(f); // leo el primer caracter de la linea
+            if(c != ';')
+            {
+                caracterCiudad[i] = c;
+            }
+        }
+        /** Cuando sale c = ';' */
+        fgetc(f); //PISO EL PUNTO Y COMA
+
+        copiaNombreCiudad(caracterCiudad,i,nuevaCiudad); /** la funcion ya le seteo el nombre y reservo memoria para la nueva ciudad */
+        nuevaCiudad->pos_x = fgetc(f);
+        fgetc(f);
+        nuevaCiudad->pos_y = fgetc(f);
+        l_insertar(&lista,posicion,nuevaCiudad);
+        posicion = l_siguiente(lista,posicion);
+
+        fgetc(f); /** lee el fin de linea */
+
+    }
+
+
+
+    fclose(f);
+
+    return lista;
+}
 
 
 int main(){
@@ -118,6 +225,9 @@ int main(){
 
     l_insertar(&lista,primeraPosicion,pB);
 
+    primeraPosicion = l_primera(lista); /** VALOR ACTUALIZADO DEL NUEVO PRIMER ELEMENTO */
+    printf("primer elemento : %d\n",*(int*)primeraPosicion->elemento);
+
 
     TPosicion ultimaPosicion = l_ultima(lista);
 //    printf("%d\n",segundaPosicion == NULL);
@@ -125,11 +235,20 @@ int main(){
     l_insertar(&lista,ultimaPosicion,pC);
 
 
-    TPosicion segundaPosicion = l_siguiente(lista,primeraPosicion); /** NO ME ESTA DANDO LA SEGUNDA POSICION DE LA LISTA, SINO LA PRIMERA */
-    l_insertar(&lista,segundaPosicion,pD); /** Esta bien que no inserte ante ultimo, porque y si ante penultimo */
 
 
-    //l_insertar(&lista,segundaPosicion,pE);
+    printf("ultimo elemento : %d\n",*(int*)ultimaPosicion->elemento); /** el ultimo hasta la 3er insercion cuidado con eso, no es el ultimo definitivo aca */
+
+    mostrarLista(&lista);
+    TPosicion segundaPosicion = l_siguiente(lista,primeraPosicion);
+    l_insertar(&lista,segundaPosicion,pD);
+    //printf("l_siguiente es %d\n",*(int*)l_siguiente(lista,primeraPosicion)->elemento);
+    //TPosicion segundaPosicion = l_siguiente(lista,primeraPosicion); /** NO ME ESTA DANDO LA SEGUNDA POSICION DE LA LISTA, SINO LA PRIMERA */
+
+
+    primeraPosicion = l_primera(lista);
+    segundaPosicion = l_siguiente(lista,primeraPosicion);
+    l_insertar(&lista,segundaPosicion,pE);
 
 
 
@@ -163,7 +282,7 @@ int main(){
 
 
     /** TDA COLA CON PRIORIDAD */
-    printf("\n\nTDA Cola Con Prioridad \n");
+    printf("\n\nTDA Cola Con Prioridad \n\n");
     int numero1 = 10;
     int numero2 = 12;
     int numero3 = 14;
@@ -231,24 +350,31 @@ int main(){
     mostrarCCP(ccp,ccp->raiz);
 
 
+
     /** TESTEANDO METODO ELIMINAR DE CCP  */
 
 
-    TEntrada eliminado = cp_eliminar(ccp);
+    //TEntrada eliminado = cp_eliminar(ccp);/** TIRA SEGMENTATION FAULT EN ELIMINAR MIRAR ESO */
 
-    printf("\nLuego de eliminar el elemento %d. CCP es: \n",*(int*)eliminado->clave);
-
-
-    mostrarCCP(ccp,ccp->raiz);
-
-    printf("La cantidad de elementos en la cola con prioridad es : %d\n",ccp->cantidad_elementos);
+    //printf("\nLuego de eliminar el elemento %d. CCP es: \n",*(int*)eliminado->clave);
 
 
+    //mostrarCCP(ccp,ccp->raiz);
+
+    //printf("La cantidad de elementos en la cola con prioridad es : %d\n",ccp->cantidad_elementos);
+
+    //TEntrada eliminado2 = cp_eliminar(ccp);
+
+   // printf("\nDespues de eliminar el elemento %d . CCP es \n",*(int*)eliminado2->clave);
+
+   // mostrarCCP(ccp,ccp->raiz);
+
+    /** DEBERIA VERIFICAR SI EL NODO IZQUIERDO DE LA RAIZ, REALMENTE ESTA COMO HIJO IZQUIERDO DE LA RAIZ */
 
 
+    /** PROGRAMA PRINCIPAL */
 
-
-
+   // leerArchivo();
 
 return 0;
 }

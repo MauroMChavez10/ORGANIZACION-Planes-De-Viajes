@@ -13,39 +13,45 @@ TLista crear_lista(){
 
 int l_insertar(TLista * lista, TPosicion pos, TElemento elem){ /** EL parametro lista es un puntero a un TLista, pero TLista a su vez es un puntero a struct celda. Por lo tanto
                                                                    el primer argumento espera un puntero a un puntero struct celda. */
-    if(lista == POS_NULA){
-        exit(LST_NO_INI);
-    }
 
-    int salida;
+    int salida = TRUE;
     TPosicion primera= *lista; /** LA VARIABLE PRIMERO GUARDA EL PRIMER ELEMENTO DE LA LISTA PARA NO DESCONECTAR EL RESTO DE LA LISTA */
     TPosicion nueva = (TPosicion)  malloc(sizeof(struct celda));
 
     if( nueva != NULL)
     {
-        if(pos == POS_NULA)
+        if(pos == POS_NULA && *lista == POS_NULA)
         {
             nueva->elemento = elem; /** COMO HAGO PARA QUE ACEPTE CUALQUIER TIPO SIN DESREFERENCIAR UN PUNTERO A VOID ? */
             nueva->celda_anterior = POS_NULA;
-            nueva->celda_siguiente = *lista; /** *lista es el primer elemento al que apuntaba antes la lista */
+            nueva->celda_siguiente = POS_NULA;
             *lista = nueva;
             salida = TRUE;
         }
         else
-        {   /** AGREGO EL ELEMENTO ELEM EN LA POSICION ADELANTE DE POS PASADA POR PARAMETRO */
-
-                    TPosicion celdaAnteriorAux = pos->celda_anterior;
-                    if(celdaAnteriorAux != NULL)
-                        celdaAnteriorAux->celda_siguiente = nueva;
-                    nueva->celda_anterior = celdaAnteriorAux;
-                    pos->celda_anterior = nueva ;
-                    nueva->celda_siguiente = pos;
+        {   /** CASO EN EL QUE INSERTE Y LA LISTA PREVIAMENTE NO TENIA ELEMENTOS */
+            if( pos == *lista || (pos == POS_NULA && *lista != POS_NULA))
+            {
+                nueva->elemento = elem;
+                nueva->celda_anterior = POS_NULA;
+                nueva->celda_siguiente = *lista;
+                TLista exPrimera = *lista;
+                exPrimera->celda_anterior = nueva;
+                *lista = nueva;
+                salida = TRUE;
+            }else /** 3ER CASO : SE INSERTARA LA CELDA */
+            {
+                if( pos != POS_NULA && *lista != POS_NULA)
+                {
+                    TPosicion celdaAnterior = pos->celda_anterior;
+                    celdaAnterior->celda_siguiente = nueva;
+                    nueva->celda_anterior = celdaAnterior;
+                    nueva->celda_siguiente = pos ;
+                    pos->celda_anterior = nueva;
                     nueva->elemento = elem;
-                    //printf("elem %d\n",(*(int*)nueva->elemento));
                     salida = TRUE;
-
-               // }
-
+                }
+            }
         }
     }else
         salida = FALSE;
@@ -72,7 +78,7 @@ int l_size(TLista lista){
 
 TPosicion l_primera(TLista lista){
     if(lista == POS_NULA){
-        printf("la lista es nula");
+        //printf("la lista es nula");
     }
 
     return lista;
@@ -100,26 +106,13 @@ TPosicion l_ultima(TLista lista){
 
 
 TPosicion l_anterior(TLista lista, TPosicion pos){
-       if (lista== NULL)
-        exit(LST_NO_INI);
-
-    if (lista == pos)
-        return POS_NULA;
-    else
-        return pos->celda_anterior;
+       return pos->celda_anterior;
 }
 
 
 TPosicion l_siguiente(TLista lista, TPosicion pos){
 
-    if (lista== NULL)
-        exit(LST_NO_INI);
-
-   if(pos == l_ultima(lista))
-        return POS_NULA;
-   else
-        return pos->celda_siguiente;
-
+    return pos->celda_siguiente;
 }
 
 TElemento l_recuperar(TLista lista, TPosicion pos){ /** Recibe como parametro un puntero*/
