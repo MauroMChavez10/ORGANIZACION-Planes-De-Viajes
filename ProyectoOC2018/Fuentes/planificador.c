@@ -5,7 +5,8 @@
 #include "colacp.h"
 
 
-typedef struct ciudad{
+typedef struct ciudad
+{
     char *nombre;
     float pos_x;
     float pos_y;
@@ -16,7 +17,8 @@ typedef struct ciudad{
     Si ambos argumentos son iguales retorna 0.
     En otro caso 1
 */
-int fAscendente(TEntrada a,TEntrada b){
+int fAscendente(TEntrada a,TEntrada b)
+{
     int salida;
 
     int * pa;
@@ -26,16 +28,16 @@ int fAscendente(TEntrada a,TEntrada b){
 
     if (*pa == *pb)
         salida= 0;
+    else if (*pa>*pb) /** ESTA LINEA ESTA CAMBIADA, HABIA PUESTO MAL LA CONDICION !! AHORA ANDA BIEN */
+        salida = -1; /** PARA ASCENDENTE.. CLAVE(A) = 70 Y CLAVE(B) = 5 . EN ESTE CASO B TIENE MAS PRIORIDAD QUE A */
     else
-        if (*pa>*pb) /** ESTA LINEA ESTA CAMBIADA, HABIA PUESTO MAL LA CONDICION !! AHORA ANDA BIEN */
-            salida = -1; /** PARA ASCENDENTE.. CLAVE(A) = 70 Y CLAVE(B) = 5 . EN ESTE CASO B TIENE MAS PRIORIDAD QUE A */
-        else
-            salida = 1;
+        salida = 1;
 
-   return salida;
+    return salida;
 }
 
-int fDescendente(TEntrada a,TEntrada b){
+int fDescendente(TEntrada a,TEntrada b)
+{
     int salida;
 
     int * pa;
@@ -45,17 +47,17 @@ int fDescendente(TEntrada a,TEntrada b){
 
     if (*pa == *pb)
         salida= 0;
+    else if (*pa<*pb) /** ClAVE(A) = 5 Y CLAVE (B) = 70 . RETORNO -1 */
+        salida = -1;
     else
-        if (*pa<*pb) /** ClAVE(A) = 5 Y CLAVE (B) = 70 . RETORNO -1 */
-            salida = -1;
-        else
-            salida = 1;
+        salida = 1;
 
-   return salida;
+    return salida;
 }
 
 
-void mostrarLista(TLista *lista){
+void mostrarLista(TLista *lista)
+{
     TPosicion pos = *lista;
     int *pElemento = (int *)pos;
     while(pos != NULL)
@@ -66,9 +68,11 @@ void mostrarLista(TLista *lista){
         pos = pos->celda_siguiente;
 
     }
+    printf("\n");
 }
 
-int profundidadNodo(TColaCP cola,TNodo n){
+int profundidadNodo(TColaCP cola,TNodo n)
+{
 
     if(n == cola->raiz)
         return 0;
@@ -79,7 +83,8 @@ int profundidadNodo(TColaCP cola,TNodo n){
 }
 
 /** Este metodo mostrara a la cola con prioridad en recorrido pre orden y cada elemento con su profundidad */
-void mostrarCCP(TColaCP cola,TNodo raiz){
+void mostrarCCP(TColaCP cola,TNodo raiz)
+{
     TEntrada t = NULL;
     if(raiz != NULL)
     {
@@ -90,12 +95,12 @@ void mostrarCCP(TColaCP cola,TNodo raiz){
         mostrarCCP(cola,raiz->hijo_derecho);
     }
 
-
 }
 
 
 
-int main(){
+int main()
+{
 
     TLista lista = crear_lista();
     int a = 5;
@@ -111,6 +116,7 @@ int main(){
     pD = &d;
     pE = &e;
 
+    /** En el caso de que se intente mandar como primer argumento POS_NULA se abortara la ejecucion */
     l_insertar(&lista,POS_NULA,pA); /** el tercer parametro tambien es un puntero. Mandar & */
 
     TPosicion primeraPosicion = l_primera(lista);
@@ -119,8 +125,8 @@ int main(){
 
     l_insertar(&lista,primeraPosicion,pB);
 
-    primeraPosicion = l_primera(lista); /** VALOR ACTUALIZADO DEL NUEVO PRIMER ELEMENTO */
-    printf("primer elemento : %d\n",*(int*)primeraPosicion->elemento);
+    primeraPosicion = l_primera(lista); /** VALOR ACTUALIZADO DEL NUEVO PRIMER ELEMENTO CUIDADO CON EL USO DE VARIABLES */
+    //printf("primer elemento : %d\n",*(int*)primeraPosicion->elemento);
 
 
     TPosicion ultimaPosicion = l_ultima(lista);
@@ -131,13 +137,11 @@ int main(){
 
 
 
-    printf("ultimo elemento : %d\n",*(int*)ultimaPosicion->elemento); /** el ultimo hasta la 3er insercion cuidado con eso, no es el ultimo definitivo aca */
 
-    mostrarLista(&lista);
+    // mostrarLista(&lista);
     TPosicion segundaPosicion = l_siguiente(lista,primeraPosicion);
     l_insertar(&lista,segundaPosicion,pD);
-    //printf("l_siguiente es %d\n",*(int*)l_siguiente(lista,primeraPosicion)->elemento);
-    //TPosicion segundaPosicion = l_siguiente(lista,primeraPosicion); /** NO ME ESTA DANDO LA SEGUNDA POSICION DE LA LISTA, SINO LA PRIMERA */
+
 
 
     primeraPosicion = l_primera(lista);
@@ -148,8 +152,11 @@ int main(){
 
 
 
-
-
+    primeraPosicion = l_primera(lista);
+    ultimaPosicion = l_ultima(lista);
+    TPosicion anteriorAlUltimo = l_anterior(lista,ultimaPosicion);
+    segundaPosicion = l_siguiente(lista,primeraPosicion);
+    TPosicion terceraPosicion = l_siguiente(lista,segundaPosicion);
 
     /**TESTEO DE METODOS TDA LISTA */
 
@@ -157,26 +164,27 @@ int main(){
     printf("TDA Lista \n");
     mostrarLista(&lista);
 
-    //printf("El primer elemento insertado es : %d\n",*(int*)tprimera->elemento);
-    //printf("El anterior al primero es : %p\n",l_anterior(lista,tprimera));
-    //printf("El ultimo elemento insertado es : %d\n",*(int*)tultima->elemento);
-    //printf("La cantidad de elementos en la lista es : %d\n",l_size(lista));
-    //printf("El elemento eliminado es : %d\n",)
-    //printf("Primer elemento : %i\n", *(int *)tprimera->elemento);// Es un puntero a void no puedo desreferenciarlo de una
-    //printf("Segundo elemento : %i\n",*(int *)(tprimera->celda_siguiente->elemento));
-   // printf("Tercer elemento : %i\n",*(int *)(tultima->elemento));
 
-    //l_eliminar(&lista,tprimera); /** falla con primera posicion y con pos nula */
-    //printf("La cantidad de elementos de la lista luego de eliminar 1 es : %d\n",l_size(lista));
-//    TPosicion nuevoPrimerElemento = l_primera(lista);
-    //tprimera = l_primera(lista);
-   // printf("El nuevo primer elemento de la lista es : %d\n",*(int *)tprimera->elemento);
+    //mostrarLista(&lista);
+    //printf("El anterior al primero elemento es : %d\n",*(int *)l_anterior(lista,l_primera(lista))->elemento);
+    printf("\nEl primer elemento de la lista es : %d\n",*(int *)l_primera(lista)->elemento);
+    printf("El anterior del ultimo elemento %d es : %d \n",*(int *)l_ultima(lista)->elemento,*(int*)anteriorAlUltimo->elemento);
+    printf("El ultimo elemento de la lista es : %d\n",*(int *)l_ultima(lista)->elemento);
+    printf("El siguiente al ultimo elemento es : %p\n",l_siguiente(lista,l_ultima(lista)));
+    printf("El anterior al primer elemento es : %p\n",l_anterior(lista,l_primera(lista))); /** COMO RETORNA LA POSICION NO DEBO CASTEAR, PERO TENGO QUE PONER %p */
+    printf("El elemento en la  tercer posicion de la lista es : %d\n",*(int *)l_recuperar(lista,terceraPosicion));
+    printf("El elemento en la  posicion POS_NULA de la lista es : %p\n",l_recuperar(lista,POS_NULA));
+    printf("La cantidad de elementos en la lista es : %d \n",l_size(lista));
+    l_eliminar(&lista,l_ultima(lista));
+    printf("La lista luego de eliminar el ultimo elemento es : ");
+    mostrarLista(&lista);
+    printf("La cantidad de elementos en la lista luego de eliminar es : %d \n",l_size(lista));
 
-    //printf("El primer elemento luego de eliminar es : %d\n",*(int*)tprimera->elemento);
+    //int pudeDestruir = l_destruir(POS_NULA);  anda bien para pos nula
 
 
     /** TDA COLA CON PRIORIDAD */
-    printf("\n\nTDA Cola Con Prioridad \n\n");
+    printf("\nTDA Cola Con Prioridad \n\n");
     int numero1 = 10;
     int numero2 = 12;
     int numero3 = 14;
@@ -218,19 +226,18 @@ int main(){
     cuartaEntrada->clave = clave4;
     cuartaEntrada->valor = valor4;
 
-   int funcionDeComparacionAscendente = fAscendente(primerEntrada,segundaEntrada); /** ACA ES NECESARIO MANDARLE & ? NO VEO LA DIFERENCIA */
+    int funcionDeComparacionAscendente = fAscendente(primerEntrada,segundaEntrada); /** ACA ES NECESARIO MANDARLE & ? NO VEO LA DIFERENCIA */
 
-   printf("El valor de la funcion de comparacion es : %d\n",funcionDeComparacionAscendente);
+    printf("El valor de la funcion de comparacion es : %d\n",funcionDeComparacionAscendente);
 
-   /** TESTEANDO METODO INSERTAR DE COLA CON PRIORIDAD, PRIMERO CREAR LA CCP*/
+    /** TESTEANDO METODO INSERTAR DE COLA CON PRIORIDAD, PRIMERO CREAR LA CCP*/
 
 
     int (*pFuncion)(void*,void*) = fAscendente;
     //int j = pFuncion(primerEntrada,segundaEntrada);
 
     TColaCP ccp = crear_cola_cp(pFuncion); /** FAscendente para minHeap, es necesario POR QUE EL WARNING? */
-    /** por que los 3 warnings? uno porque no use la variable todavia ccp..*/
-   // int *(pointerFunction) = ccp->f;
+    // int *(pointerFunction) = ccp->f;
     //fAscendente(primerEntrada,segundaEntrada);
     //printf("%d El valor del puntero a la funcion es : \n",*pointerFunction);
     cp_insertar(ccp,primerEntrada);
@@ -240,35 +247,60 @@ int main(){
     printf("La cantidad de elementos en la cola con prioridad es : %d\n",ccp->cantidad_elementos);
 
     /** MOSTRANDO LOS ELEMENTOS INSERTADOS EN LA CCP EN PRE ORDEN */
-    printf("CCP LUEGO DE INSERTAR \n");
+    printf("Cola con prioridad luego de insertar \n");
     mostrarCCP(ccp,ccp->raiz);
+    //printf("direccion de hijo derecho de la raiz %p\n",ccp->raiz->hijo_derecho);
+    /** TESTEANDO METODO DESTRUIR DE CCP */
 
+    int destruccion = cp_destruir(ccp);
 
+    printf("%d destruccion\n",destruccion);
+    printf("cant elementos de ccp %p\n",ccp->raiz->hijo_derecho);
 
     /** TESTEANDO METODO ELIMINAR DE CCP  */
 
 
-    //TEntrada eliminado = cp_eliminar(ccp);/** TIRA SEGMENTATION FAULT EN ELIMINAR MIRAR ESO */
+    //TEntrada eliminado = cp_eliminar(ccp);/** ELIMINA BIEN*/
 
+    //printf("Cola con prioridad luego de eliminar el elemento :%d\n",*(int*)eliminado->clave);
+    //mostrarCCP(ccp,ccp->raiz);
+
+    //TEntrada laRaiz = ccp->raiz->entrada;
+    //TNodo padreRaiz = ccp->raiz->padre;
+    //TNodo hijoIzq = ccp->raiz->hijo_izquierdo;
+    //TNodo hijoDer = ccp->raiz->hijo_derecho;
+    //printf("Raiz elemento: %d ",*(int*)laRaiz->clave);
+    //printf("Padre de la raiz: %p \n",padreRaiz);
+    //printf("Hijo izquierdo raiz : %d\n",*(int*)hijoIzq->entrada->clave);
+    //printf("Hijo derecho de la raiz : %d\n",*(int*)hijoDer->entrada->clave);
+
+    //cp_eliminar(ccp);
     //printf("\nLuego de eliminar el elemento %d. CCP es: \n",*(int*)eliminado->clave);
 
 
     //mostrarCCP(ccp,ccp->raiz);
 
-    //printf("La cantidad de elementos en la cola con prioridad es : %d\n",ccp->cantidad_elementos);
+    //eliminado = cp_eliminar(ccp);
 
-    //TEntrada eliminado2 = cp_eliminar(ccp);
 
-   // printf("\nDespues de eliminar el elemento %d . CCP es \n",*(int*)eliminado2->clave);
+    //printf("Luego de eliminar el elemento %d. CCP es \n",*(int*)eliminado->clave);
 
-   // mostrarCCP(ccp,ccp->raiz);
+    //mostrarCCP(ccp,ccp->raiz);
 
-    /** DEBERIA VERIFICAR SI EL NODO IZQUIERDO DE LA RAIZ, REALMENTE ESTA COMO HIJO IZQUIERDO DE LA RAIZ */
+    //eliminado = cp_eliminar(ccp);
+
+    //printf("Luego de eliminar el elemento %d. CCP es \n",*(int*)eliminado->clave);
+
+    //mostrarCCP(ccp,ccp->raiz); /** Muestra la ccp vacia */
+
+    //printf("\nCantidad de elementos luego de eliminarlos a todos : %d\n",cp_size(ccp));
+
+
 
 
     /** PROGRAMA PRINCIPAL */
 
-   // leerArchivo();
+    // leerArchivo();
 
-return 0;
+    return 0;
 }
