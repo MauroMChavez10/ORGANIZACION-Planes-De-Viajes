@@ -222,6 +222,7 @@ int l_destruir(TLista * lista)
         //free(p);
     }
 
+    free(*lista);
     salida = TRUE;
     return salida;
 }

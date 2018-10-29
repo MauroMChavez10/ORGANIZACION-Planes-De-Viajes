@@ -93,6 +93,7 @@ void mostrarCCP(TColaCP cola,TNodo raiz)
         printf(" profundidad = %d\n",profundidadNodo(cola,raiz));
         mostrarCCP(cola,raiz->hijo_izquierdo);
         mostrarCCP(cola,raiz->hijo_derecho);
+
     }
 
 }
@@ -180,8 +181,7 @@ int main()
     mostrarLista(&lista);
     printf("La cantidad de elementos en la lista luego de eliminar es : %d \n",l_size(lista));
 
-    //int pudeDestruir = l_destruir(POS_NULA);  anda bien para pos nula
-
+    //int pudeDestruir = l_destruir(&lista);
 
     /** TDA COLA CON PRIORIDAD */
     printf("\nTDA Cola Con Prioridad \n\n");
@@ -254,8 +254,14 @@ int main()
 
     int destruccion = cp_destruir(ccp);
 
-    printf("%d destruccion\n",destruccion);
-    printf("cant elementos de ccp %p\n",ccp->raiz->hijo_derecho);
+    if(destruccion == 1)
+        printf("Se pudo destruir correctamente la Cola con prioridad \n");
+    else
+        printf("No se pudo destruir correctamente la Cola con prioridad \n");
+    printf("La cantidad de elementos luego de destruir la cola es : %d\n",cp_size(ccp));
+
+    //printf("La Cola con Prioridad luego de destruir todos los elementos es : \n"); /** NO SE PUEDE MOSTRAR LA COLA CON PRIORIDAD YA QUE SE DESTRUYO Y TIRA SEGMENTATION FAULT */
+    //mostrarCCP(ccp,ccp->raiz);
 
     /** TESTEANDO METODO ELIMINAR DE CCP  */
 

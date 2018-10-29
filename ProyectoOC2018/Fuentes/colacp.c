@@ -207,7 +207,10 @@ void posOrden(TColaCP cola,TNodo r)
     {
         posOrden(cola,r->hijo_izquierdo);
         posOrden(cola,r->hijo_derecho);
+        TEntrada t = r->entrada;
+        printf("%d ",*(int*) t->clave); /** MUESTRA POR PANTALLA LA DESTRUCCION DE LA COLA EN POSORDEN */
         free(r);
+
     }
 }
 
