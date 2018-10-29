@@ -3,6 +3,7 @@
 #include "lista.h"
 #include "constantes.h"
 #include "colacp.h"
+#include <string.h>
 
 
 typedef struct ciudad
@@ -11,6 +12,14 @@ typedef struct ciudad
     float pos_x;
     float pos_y;
 } *TCiudad;
+
+/** Este metodo computa la distancia entre dos ciudades */
+int distanciaDeManhattan(TCiudad primerCiudad,TCiudad segundaCiudad)
+{
+    return (abs((segundaCiudad->pos_x)+ (primerCiudad->pos_x)) - ((segundaCiudad->pos_y)-(primerCiudad->pos_y))) ;
+
+}
+
 
 /**
     Si el primer argumento pasado a la funcion fAscendente es menor al segundo, retorna -1.
@@ -95,6 +104,86 @@ void mostrarCCP(TColaCP cola,TNodo raiz)
         mostrarCCP(cola,raiz->hijo_derecho);
 
     }
+
+}
+
+TCiudad crearCiudad(float x,float y,int tamanio)
+{
+    TCiudad nueva = malloc(sizeof(struct ciudad));
+    nueva->pos_x = x;
+    nueva->pos_y = y;
+    nueva->nombre = malloc(tamanio*sizeof(char));
+
+    return nueva;
+}
+
+
+/** Este metodo se encargara de recorrer el archivo, formando el nombre de cada ciudad y su respectiva posicion
+    y añadiendolos a un listado de ciudades a visitar */
+void leerArchivo()
+{
+
+    int c = 0 ;
+    FILE *fd;
+    TCiudad origen = malloc(sizeof(struct ciudad));
+    char  direccion [] = "/home/alumno/Escritorio/ProyectoOC2018/viajes.txt";
+
+    fd = fopen(direccion,"r");
+
+    if(fd == NULL)
+    {
+        printf("Error al tratar de leer el archivo");
+        return FALSE;
+    }
+
+        c = fgetc(fd);
+        printf("Primer letra del archivo %c ",c);
+        origen->pos_x = c;
+
+        c = fgetc(fd) ;
+
+        c = fgetc(fd);
+
+        origen->pos_y = c;
+
+        c = fgetc(fd); // consume fin de linea
+        printf("ultimo letra de la primer linea del archivo %c \n",c); // c == '\n' PONER %c para ver que caracter leo
+
+        while(c != EOF)
+        {
+            c = fgetc(fd);
+            int i = 0;
+            TCiudad nueva = malloc(sizeof(struct ciudad));
+            nueva->nombre = malloc(50*sizeof(char));
+            char cadena[50];
+            while ( c != ';')  /** ESTOY RECORRIENDO PARA FORMAR EL NOMBRE DE LA CIUDAD */
+            {
+                cadena[i]= c;
+                c = fgetc(fd);
+            }
+
+            strcpy(nueva->nombre,cadena); /** copio el nombre de la ciudad en el nombre de la lista */
+            //printf("\nSali del nombre el caracter es %c\n",c);
+
+            c = fgetc(fd); /** piso el valor del ; */
+            //c = fgetc(fd);
+            printf("El primer valor luego del punto y coma es  %c ",c);
+            nueva->pos_x = c;
+            c = fgetc(fd);
+
+            c = fgetc(fd);
+
+            nueva->pos_y = c;
+            printf("y el segundo %c\n",c);
+            c= fgetc(fd);
+
+            //nueva->pos_x = c;
+            //c = fgetc(fd); /** piso el segundo ; */
+        }
+
+
+
+
 
 }
 
@@ -306,7 +395,9 @@ int main()
 
     /** PROGRAMA PRINCIPAL */
 
-    // leerArchivo();
+
+
+    leerArchivo();
 
     return 0;
 }
