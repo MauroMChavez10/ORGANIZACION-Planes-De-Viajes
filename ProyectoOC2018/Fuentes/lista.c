@@ -85,10 +85,6 @@ int l_size(TLista lista)
 
 TPosicion l_primera(TLista lista)
 {
-    if(lista == POS_NULA)
-    {
-        //printf("la lista es nula");
-    }
 
     return lista;
 
@@ -150,7 +146,7 @@ TElemento l_recuperar(TLista lista, TPosicion pos)  /** Recibe como parametro un
 int l_eliminar(TLista * lista, TPosicion pos)
 {
     int salida = FALSE;
-    if(*lista == POS_NULA)
+    if(lista == POS_NULA)
         exit(LST_NO_INI);
     //printf("%d Elemento eliminado : \n", *(int*) pos->elemento);
 
@@ -216,7 +212,7 @@ int l_destruir(TLista * lista)
 
     while (p->celda_siguiente != POS_NULA)
     {
-
+        p = *lista;
         *lista = p->celda_siguiente;
         free(p);
         //free(p);

@@ -107,25 +107,32 @@ void mostrarCCP(TColaCP cola,TNodo raiz)
 
 }
 
-TCiudad crearCiudad(float x,float y,int tamanio)
+void mostrarNombreCiudad(char *nombreCiudad,int longitudCiudad,float px,float py)
 {
-    TCiudad nueva = malloc(sizeof(struct ciudad));
-    nueva->pos_x = x;
-    nueva->pos_y = y;
-    nueva->nombre = malloc(tamanio*sizeof(char));
+     int i = 0;
+        for(i = 0 ; i< longitudCiudad; i++)
+            printf("%c",*(nombreCiudad+i));
 
-    return nueva;
+    printf(";%.f;%.f\n",px,py);
+
 }
+
 
 
 /** Este metodo se encargara de recorrer el archivo, formando el nombre de cada ciudad y su respectiva posicion
     y añadiendolos a un listado de ciudades a visitar */
-void leerArchivo()
+void leerArchivo(char * txt,TLista *lista)
 {
-
-    int c = 0 ;
-    FILE *fd;
+    int x= 0.0;
+    int y= 0.0;
     TCiudad origen = malloc(sizeof(struct ciudad));
+    TCiudad nueva = POS_NULA;
+    TLista listaDeCiudades = crear_lista();
+    TPosicion pos = POS_NULA;
+    char *nombreCiudad;
+    //char direccion[80];
+    FILE *fd;
+
     char  direccion [] = "/home/alumno/Escritorio/ProyectoOC2018/viajes.txt";
 
     fd = fopen(direccion,"r");
@@ -133,76 +140,67 @@ void leerArchivo()
     if(fd == NULL)
     {
         printf("Error al tratar de leer el archivo");
-        return FALSE;
+        exit(FALSE);
     }
 
-        c = fgetc(fd);
-        printf("Primer letra del archivo %c ",c);
-        origen->pos_x = c;
 
-        c = fgetc(fd) ;
+    fscanf(fd,"%d;%d\n",&x,&y); /** ESTARIA LEYENDO EL FORMATO DE LA PRIMER CIUDAD */
+    origen->pos_x = x;
+    origen->pos_y = y;
+    printf("%.f;%.f\n",origen->pos_x,origen->pos_y); /** %.f me escribe como punto flotante con 1 caracter despues del punto decimal */
+    l_insertar(&listaDeCiudades,pos,origen);
 
-        c = fgetc(fd);
+    while (!feof(fd)){
+        nueva = malloc(sizeof(struct ciudad));
+        nombreCiudad = nueva->nombre;
+        nombreCiudad = malloc(50*sizeof(char));
+        fscanf(fd,"%[^;];",nombreCiudad);
+        fscanf(fd,"%d;",&x);
+        nueva->pos_x = x;
+        fscanf(fd,"%d\n",&y);
+        nueva->pos_y = y;
 
-        origen->pos_y = c;
+        mostrarNombreCiudad(nombreCiudad,strlen(nombreCiudad)+1,nueva->pos_x,nueva->pos_y);
+        //printf(" %c  ",(*nombreCiudad));
+        //printf(" %c \n",(*nombreCiudad)+1); /** PERFECTO ME ESTA GUARDANDO EN LA PRIMER COMPONENTE LA PRIMER LETRA DE CADA CIUDAD */
 
-        c = fgetc(fd); // consume fin de linea
-        printf("ultimo letra de la primer linea del archivo %c \n",c); // c == '\n' PONER %c para ver que caracter leo
+        l_insertar(&listaDeCiudades,pos,nueva);
+    }
 
-        while(c != EOF)
-        {
-            c = fgetc(fd);
-            int i = 0;
-            TCiudad nueva = malloc(sizeof(struct ciudad));
-            nueva->nombre = malloc(50*sizeof(char));
-            char cadena[50];
-            while ( c != ';')  /** ESTOY RECORRIENDO PARA FORMAR EL NOMBRE DE LA CIUDAD */
-            {
-                cadena[i]= c;
-                c = fgetc(fd);
-            }
+    //fscanf(archivo,"%d:%d\n",&x,&y); PARA FORMAR LA CIUDAD
+    //fscanf(archivo,"%[^;];",nombre)
+    //fscanf(archivo,"%d;",&x);/** CONSUMO HASTA EL PUNTO Y COMA. LO SALTEA
+    //fscanf(archivo,"%d\n",&y);
 
-            strcpy(nueva->nombre,cadena); /** copio el nombre de la ciudad en el nombre de la lista */
-            //printf("\nSali del nombre el caracter es %c\n",c);
-
-            c = fgetc(fd); /** piso el valor del ; */
-            //c = fgetc(fd);
-            printf("El primer valor luego del punto y coma es  %c ",c);
-            nueva->pos_x = c;
-            c = fgetc(fd);
-
-            c = fgetc(fd);
-
-            nueva->pos_y = c;
-            printf("y el segundo %c\n",c);
-            c= fgetc(fd);
-
-            //nueva->pos_x = c;
-            //c = fgetc(fd); /** piso el segundo ; */
-        }
-
-
-
-
+    fclose(fd);
+    *lista = listaDeCiudades;
 
 }
 
+//void menu()
+//{
+    //mostrarCiudadesAscendente();
+    //mostrarCiudadesDescendente();
+    //reducirHorasManejo();
+
+//}
 
 
-int main()
+
+int main(int argc, char ** arreglo)
 {
 
     TLista lista = crear_lista();
     int a = 5;
     int b = 6;
-    int c = 10;
+    int g = 10;
     int d = 30;
     int e = 70;
-    void *pA, *pB, *pC,*pD,*pE;
+    void *pA, *pB, *pG,*pD,*pE;
 
     pA = &a;
     pB = &b;
-    pC = &c;
+    pG = &g;
     pD = &d;
     pE = &e;
 
@@ -222,7 +220,7 @@ int main()
     TPosicion ultimaPosicion = l_ultima(lista);
 //    printf("%d\n",segundaPosicion == NULL);
 
-    l_insertar(&lista,ultimaPosicion,pC);
+    l_insertar(&lista,ultimaPosicion,pG);
 
 
 
@@ -270,7 +268,13 @@ int main()
     mostrarLista(&lista);
     printf("La cantidad de elementos en la lista luego de eliminar es : %d \n",l_size(lista));
 
-    //int pudeDestruir = l_destruir(&lista);
+    int pudeDestruir = l_destruir(&lista);
+    if( pudeDestruir )
+        printf("Pude destruir toda la lista, la cantidad de elementos es : %d\n",l_size(lista));
+    else
+        printf("No pude destruir toda la lista, la cantidad de elementos es : %d\n",l_size(lista));
+
+
 
     /** TDA COLA CON PRIORIDAD */
     printf("\nTDA Cola Con Prioridad \n\n");
@@ -395,9 +399,29 @@ int main()
 
     /** PROGRAMA PRINCIPAL */
 
+    printf("\n      PROGRAMA PRINCIPAL   \n" );
+
+    /** PARA LEER POR CONSOLA EL ARCHIVO TXT */
+    //leerArchivo();
+    TLista listaDeCiudades = NULL;
+
+    //if (argc == 1) /** NO RECIBI EL TXT */
+        //exit(1);
+    //else
+        //if( argc == 2)
+        //{
+            //char * punteroATxt = arreglo[1]; /** arreglo[1] es "fede.txt" */
+            //leerArchivo(punteroATxt, &listaDeCiudades);
+            //printf("cant ciudades en listaDeCiudades :%d\n",l_size(listaDeCiudades));
+        //}
 
 
-    leerArchivo();
+    leerArchivo("hola",&listaDeCiudades); /** ENVIARLE UN PUNTERO A TLISTA ! ASI VEO EL CAMBIO */
+
+
+
+
+
 
     return 0;
 }
