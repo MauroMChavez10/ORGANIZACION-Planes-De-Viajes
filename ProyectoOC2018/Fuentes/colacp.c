@@ -190,14 +190,14 @@ TEntrada cp_eliminar(TColaCP cola)
     cola->raiz->entrada = nodoMasProfundo->entrada;
 
 
-    TNodo padreDeW = nodoMasProfundo->padre;
+    TNodo padreDeNodoMasProfundo = nodoMasProfundo->padre;
 
-    if(padreDeW->hijo_izquierdo == nodoMasProfundo)
-        padreDeW->hijo_izquierdo = NULL;
+    if(padreDeNodoMasProfundo->hijo_izquierdo == nodoMasProfundo)
+        padreDeNodoMasProfundo->hijo_izquierdo = NULL;
     else
-        padreDeW->hijo_derecho = NULL;
+        padreDeNodoMasProfundo->hijo_derecho = NULL;
 
-    nodoMasProfundo->padre = POS_NULA;
+    nodoMasProfundo->padre = NULL;
     free(nodoMasProfundo); /** A ESTA ALTURA LO QUE HICE FUE CAMBIAR LA ENTRADA DEL ULTIMO NODO EN LA RAIZ Y LUEGO ELIMINAR EL ULTIMO NODO.FALTA BURBUJEAR HACIA ABAJO */
 
 
