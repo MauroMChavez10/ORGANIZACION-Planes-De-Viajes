@@ -165,6 +165,7 @@ int cp_insertar(TColaCP cola, TEntrada entr)
 /**
  * Eliminara de la cola la entrada con mayor prioridad, el nodoMasProfundo del arbol sera el que reemplaze momentaneamente a la raiz
  * y burbujeara hacia abajo si rompe la propiedad de orden del heap. El metodo buscarNodo, busca la posicion del padre del nodo a eliminar.
+ * al ir burbujeando hacia abajo, en la implementacion se iran cambiando las entradas de los nodos .
  */
 TEntrada cp_eliminar(TColaCP cola)
 {
