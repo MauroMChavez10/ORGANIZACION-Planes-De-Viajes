@@ -155,25 +155,34 @@ void leerArchivo(char * txt,TLista *lista)
         nombreCiudad = nueva->nombre;
         nombreCiudad = malloc(50*sizeof(char));
         fscanf(fd,"%[^;];",nombreCiudad);
+        //printf("long ciudad = %d\n",strlen(nombreCiudad)+1); esta bien esta longitud ?
         fscanf(fd,"%d;",&x);
         nueva->pos_x = x;
         fscanf(fd,"%d\n",&y);
         nueva->pos_y = y;
 
-        mostrarNombreCiudad(nombreCiudad,strlen(nombreCiudad)+1,nueva->pos_x,nueva->pos_y);
+        //mostrarNombreCiudad(nombreCiudad,strlen(nombreCiudad)+1,nueva->pos_x,nueva->pos_y);
         //printf(" %c  ",(*nombreCiudad));
         //printf(" %c \n",(*nombreCiudad)+1); /** PERFECTO ME ESTA GUARDANDO EN LA PRIMER COMPONENTE LA PRIMER LETRA DE CADA CIUDAD */
-
+        //printf("nueva x: %.f y: %.f\n",nueva->pos_x,nueva->pos_y);
         l_insertar(&listaDeCiudades,pos,nueva);
+        mostrarNombreCiudad(nombreCiudad,strlen(nombreCiudad)+1,nueva->pos_x,nueva->pos_y);
+        //TCiudad city1 = l_primera(*lista)->elemento;
+        //printf("Primer pos x : %.f\n",city1->pos_x);
+
     }
 
+    //*lista = listaDeCiudades;
+    //TCiudad city = l_primera(*lista)->elemento;
+    //printf("pos x en listadeciudades %.f",city->pos_x);
     //fscanf(archivo,"%d:%d\n",&x,&y); PARA FORMAR LA CIUDAD
     //fscanf(archivo,"%[^;];",nombre)
     //fscanf(archivo,"%d;",&x);/** CONSUMO HASTA EL PUNTO Y COMA. LO SALTEA
     //fscanf(archivo,"%d\n",&y);
-
+    //*lista = listaDeCiudades;
+    *lista = listaDeCiudades; /** NO ME DEJA USAR LA LISTA QUE LLENE !! */
     fclose(fd);
-    *lista = listaDeCiudades;
+    //*lista = listaDeCiudades;
 
 }
 
@@ -397,12 +406,11 @@ int main(int argc, char ** arreglo)
 
 
 
-    /** PROGRAMA PRINCIPAL */
+    /** ---------------- PROGRAMA PRINCIPAL ------------------- */
 
     printf("\n      PROGRAMA PRINCIPAL   \n" );
 
     /** PARA LEER POR CONSOLA EL ARCHIVO TXT */
-    //leerArchivo();
     TLista listaDeCiudades = NULL;
 
     //if (argc == 1) /** NO RECIBI EL TXT */
@@ -418,9 +426,10 @@ int main(int argc, char ** arreglo)
 
     leerArchivo("hola",&listaDeCiudades); /** ENVIARLE UN PUNTERO A TLISTA ! ASI VEO EL CAMBIO */
 
+    TCiudad c1 = l_ultima(listaDeCiudades);
+    //mostrarNombreCiudad(c1->nombre,strlen(c1->nombre)+1,c1->pos_x,c1->pos_y); //COMO NO ME COPIO EL NOMBRE NI LAS POSICIONES NO MUESTRA NADA . SINO SI ANDARIA //
 
-
-
+    /** NO ME DEJA USAR LA LISTA FUERA DEL MAIN */
 
 
     return 0;

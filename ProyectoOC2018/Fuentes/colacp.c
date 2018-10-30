@@ -105,6 +105,11 @@ void downHeap(TColaCP cola, TNodo r)
 
 }
 
+/**
+ * Si la cola no tenia elementos, entonces agregara uno nuevo con la entrada entr pasada por parametro.
+ * Caso contrario utilizara la funcion buscarNodo para encontrar a su padre(que es de donde debe engancharse como hijo)
+ * Luego si la propiedad de orden del heap se rompe, Burbujeara hacia arriba hasta llegar a la raiz en el peor caso.
+ */
 int cp_insertar(TColaCP cola, TEntrada entr)
 {
     if(cola == POS_NULA)
@@ -157,6 +162,10 @@ int cp_insertar(TColaCP cola, TEntrada entr)
     return TRUE;
 }
 
+/**
+ * Eliminara de la cola la entrada con mayor prioridad, el nodoMasProfundo del arbol sera el que reemplaze momentaneamente a la raiz
+ * y burbujeara hacia abajo si rompe la propiedad de orden del heap. El metodo buscarNodo, busca la posicion del padre del nodo a eliminar.
+ */
 TEntrada cp_eliminar(TColaCP cola)
 {
     if(cola == POS_NULA)
@@ -174,25 +183,25 @@ TEntrada cp_eliminar(TColaCP cola)
             return entradaAEliminar;
     }
 
-    TNodo w = POS_NULA;
+    TNodo nodoMasProfundo = POS_NULA;
     //TEntrada entradaAEliminar = NULL;
     entradaAEliminar = cola->raiz->entrada; /** ME GUARDO EN UNA VARIABLE AUXILIAR PARA NO PERDER LA ENTRADA QUE QUIERO ELIMINAR */
-    w = buscarNodo(cola,cola->cantidad_elementos); /** w es el ultimo nodo del arbol mas profundo */
-    cola->raiz->entrada = w->entrada;
+    nodoMasProfundo = buscarNodo(cola,cola->cantidad_elementos);
+    cola->raiz->entrada = nodoMasProfundo->entrada;
 
 
-    TNodo padreDeW = w->padre;
+    TNodo padreDeW = nodoMasProfundo->padre;
 
-    if(padreDeW->hijo_izquierdo == w)
+    if(padreDeW->hijo_izquierdo == nodoMasProfundo)
         padreDeW->hijo_izquierdo = NULL;
     else
         padreDeW->hijo_derecho = NULL;
 
-    w->padre = POS_NULA;
-    free(w); /** A ESTA ALTURA LO QUE HICE FUE CAMBIAR LA ENTRADA DEL ULTIMO NODO EN LA RAIZ Y LUEGO ELIMINAR EL ULTIMO NODO.FALTA BURBUJEAR HACIA ABAJO */
+    nodoMasProfundo->padre = POS_NULA;
+    free(nodoMasProfundo); /** A ESTA ALTURA LO QUE HICE FUE CAMBIAR LA ENTRADA DEL ULTIMO NODO EN LA RAIZ Y LUEGO ELIMINAR EL ULTIMO NODO.FALTA BURBUJEAR HACIA ABAJO */
 
 
-    downHeap(cola,cola->raiz); /** EL ARBOL ESTA COMPLETO PERO PODRIA ESTAR VIOLANDO LA PROPIEDAD DE ORDEN DEL HEAP */
+    downHeap(cola,cola->raiz);
 
 
 
@@ -214,7 +223,10 @@ void posOrden(TColaCP cola,TNodo r)
     }
 }
 
-/** DEBO DESTRUIR EN POSORDEN */
+/**
+ * Destruye los elementos de la cola en posOrden y libera toda la memoria siempre que tenga al menos un elemento.
+ * Caso contrario aborta la ejecucion
+ */
 int cp_destruir(TColaCP cola)
 {
 
@@ -233,6 +245,9 @@ int cp_destruir(TColaCP cola)
     return salida ;
 }
 
+/**
+ * Retorna la cantidad de elementos en la cola
+ */
 int cp_size(TColaCP cola)
 {
     if(cola == NULL)

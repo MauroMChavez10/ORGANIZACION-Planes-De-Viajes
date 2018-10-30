@@ -5,17 +5,25 @@
 
 
 
-
+/**
+ * Crea una lista doblemente enlazada vacía . Sin centinelas
+ */
 TLista crear_lista()
 {
     return POS_NULA;    /** SOLO ESTO PORQUE SI PIDO MEMORIA PARA GUARDAR UNA STRUCT CELDA ESTOY HACIENDO UN CENTINELA Y ESTA MAL */
 
 }
 
-
+/**
+ * Este metodo considerara varios casos al momento de insertar un nuevo elemento en la lista
+ * CASO 1 : Si la lista no fue creada previamente, debe abortar la ejecucion
+ * CASO 2 : SE CREO LA LISTA VACIA PREVIAMENTE Y NO HABIA ELEMENTOS ANTES
+ * CASO 3 : La lista tenia al menos un elementos antes
+ * CASO 4 : LA NUEVA CELDA QUEDARA ENTRE MEDIO DE DOS CELDAS
+ */
 int l_insertar(TLista * lista, TPosicion pos, TElemento elem)
 {
-    if(lista == POS_NULA) /** Si la lista no fue creada previamente, debe abortar la ejecucion */
+    if(lista == POS_NULA)
         exit(LST_NO_INI);
 
     int salida = TRUE;
@@ -23,7 +31,7 @@ int l_insertar(TLista * lista, TPosicion pos, TElemento elem)
 
     if( nueva != NULL)
     {
-        if(pos == POS_NULA && *lista == POS_NULA) /** CASO 2 : SE CREO LA LISTA VACIA PREVIAMENTE Y NO HABIA ELEMENTOS ANTES */
+        if(pos == POS_NULA && *lista == POS_NULA) /** Caso 2 */
         {
             nueva->elemento = elem;
             nueva->celda_anterior = POS_NULA;
@@ -33,7 +41,7 @@ int l_insertar(TLista * lista, TPosicion pos, TElemento elem)
         }
         else
         {
-            if( pos == *lista || (pos == POS_NULA && *lista != POS_NULA))
+            if( pos == *lista || (pos == POS_NULA && *lista != POS_NULA)) /** CASO 3 */
             {
                 nueva->elemento = elem;
                 nueva->celda_anterior = POS_NULA;
@@ -43,7 +51,7 @@ int l_insertar(TLista * lista, TPosicion pos, TElemento elem)
                 *lista = nueva;
                 salida = TRUE;
             }
-            else  /** 3ER CASO : LA NUEVA CELDA QUEDARA ENTRE MEDIO DE DOS CELDAS */
+            else  /** 4 CASO  */
             {
                 if( pos != POS_NULA && *lista != POS_NULA)
                 {
@@ -65,7 +73,10 @@ int l_insertar(TLista * lista, TPosicion pos, TElemento elem)
 }
 
 
-
+/**
+ * Si la lista pasada por parametro no esta inicializada, la cantidad de elementos es 0
+ * Caso contrario, recorro cada uno de los elementos de la lista y aumento cantidad de elementos en uno.
+ */
 int l_size(TLista lista)
 {
     if(lista == POS_NULA)
@@ -83,6 +94,9 @@ int l_size(TLista lista)
     return cant ;
 }
 
+/**
+ *   Retorna la primer posicion de la lista, si la lista es vacia retorna POS_NULA
+ */
 TPosicion l_primera(TLista lista)
 {
 
@@ -90,6 +104,9 @@ TPosicion l_primera(TLista lista)
 
 }
 
+/**
+ *   Retorna la ultima posicion de la lista, si la lista es vacia retorna POS_NULA
+ */
 TPosicion l_ultima(TLista lista)
 {
     TPosicion ultima = POS_NULA;
@@ -201,6 +218,11 @@ int l_eliminar(TLista * lista, TPosicion pos)
 
 }
 
+/**
+ * Si la lista pasada por parametro no esta inicializada, aborta la ejecucion
+ * Caso contrario, recorro la lista pero cada vez que avanzo de posicion p, libero la memoria que ocupa..
+ * Por ultimo libero la memoria de *lista que es la referencia al primer elemento de la lista
+ */
 int l_destruir(TLista * lista)
 {
     int salida= FALSE;
