@@ -112,6 +112,8 @@ void mostrarCiudades(TLista listaDeCiudades)
 {
     int i = 0;
     TPosicion pos = l_anterior(listaDeCiudades,l_ultima(listaDeCiudades));
+    TCiudad ciudadOrigen = l_recuperar(listaDeCiudades,l_ultima(listaDeCiudades));
+    printf("%.f;%.f\n",ciudadOrigen->pos_x,ciudadOrigen->pos_x);
     for(i = 0; pos != NULL; i++)
     {
         TCiudad city = pos->elemento;
@@ -155,7 +157,7 @@ void leerArchivo(char * txt,TLista *lista)
     fscanf(fd,"%d;%d\n",&x,&y); /** ESTARIA LEYENDO EL FORMATO DE LA PRIMER CIUDAD */
     origen->pos_x = x;
     origen->pos_y = y;
-    printf("%.f;%.f\n",origen->pos_x,origen->pos_y); /** %.f me escribe como punto flotante con 1 caracter despues del punto decimal */
+    //printf("%.f;%.f\n",origen->pos_x,origen->pos_y); /** %.f me escribe como punto flotante con 1 caracter despues del punto decimal */
     l_insertar(&listaDeCiudades,pos,origen);
 
     while (!feof(fd))
@@ -181,27 +183,44 @@ void leerArchivo(char * txt,TLista *lista)
  * LLenara la colaDeCiudades con ciudades, donde la clave de su entrada sera la distancia entre la ciudad origen y la destino
  * y el valor sera la ciudad.
  */
-void mostrarAscendente(TLista listaDeCiudades,TColaCP colaDeCiudades)
+void mostrarAscendenteODescendente(TLista listaDeCiudades,TColaCP colaDeCiudades)
 {
     TPosicion pos = l_ultima(listaDeCiudades);
     TCiudad ciudadOrigen = l_recuperar(listaDeCiudades,pos);
-    TPosicion p = l_primera(listaDeCiudades);
-    TEntrada e = malloc(sizeof(struct entrada));
-    e->clave = malloc(sizeof(float));
-    printf("origen x: %.f y: %.f\n",ciudadOrigen->pos_x,ciudadOrigen->pos_y);
+    TEntrada e = NULL;
+    float posX = ciudadOrigen->pos_x;
+    float posY = ciudadOrigen->pos_y;
+    //printf("origen x: %.f y: %.f\n",ciudadOrigen->pos_x,ciudadOrigen->pos_y);
+    l_eliminar(&listaDeCiudades,pos);
 
-    while(p != NULL)
+
+    while(l_size(listaDeCiudades)>0)
     {
-        TCiudad ciudadDestino = p->elemento;
+        e = malloc(sizeof(struct entrada));
+        e->clave = malloc(sizeof(float));
 
-        *(float *)(e->clave) = distanciaDeManhattan(ciudadOrigen,ciudadDestino);
-        printf("Destino x: %.f y: %.f\n",ciudadDestino->pos_x,ciudadDestino->pos_y);
-        printf("%.f \n",distanciaDeManhattan(ciudadOrigen,ciudadDestino));
+        TCiudad ciudadDestino = l_recuperar(listaDeCiudades,l_ultima(listaDeCiudades));
+
+        float d = abs((float)(ciudadDestino->pos_x - posX) ) + abs((float)(ciudadDestino->pos_y - posY)) ;
+        *(float *)e->clave = d ;
+       // printf("%.f \n",d);
         e->valor = ciudadDestino;
         cp_insertar(colaDeCiudades,e);
-        p = l_siguiente(listaDeCiudades,p);
+        l_eliminar(&listaDeCiudades,l_ultima(listaDeCiudades));
+
     }
 
+    int i =0 ;
+    for(i= 0 ; cp_size(colaDeCiudades)>0; i++)
+    {
+        TEntrada e = cp_eliminar(colaDeCiudades);
+        TCiudad city = e->valor;
+        printf("%d. %s\n",i+1,city->nombre);
+
+    }
+
+    free(e->clave);
+    free(e);
     //TEntrada eliminada = cp_eliminar(colaDeCiudades);
     //printf("%.f distancia ",*(float*)eliminada->clave);
 }
@@ -226,7 +245,9 @@ int main(int argc, char ** arreglo)
 
     /** PARA LEER POR CONSOLA EL ARCHIVO TXT */
     TLista listaDeCiudades = crear_lista();
+    TLista listaParaColaDescendente = crear_lista();
     TColaCP colaDeCiudades = crear_cola_cp(&fAscendente);
+    TColaCP colaDescendente = crear_cola_cp(&fDescendente);
 
     if (argc != 2) /** NO RECIBI EL TXT */
     {
@@ -238,9 +259,16 @@ int main(int argc, char ** arreglo)
         char * punteroATxt = arreglo[1]; /** arreglo[1] es "fede.txt" */
         leerArchivo(punteroATxt, &listaDeCiudades);
         mostrarCiudades(listaDeCiudades);
-        printf("---------------------------------------------\n\n");
+        printf("---------------------------------------------\n");
         printf("Mostrar ascendente: \n");
-        mostrarAscendente(listaDeCiudades,colaDeCiudades);
+        mostrarAscendenteODescendente(listaDeCiudades,colaDeCiudades);
+        leerArchivo(punteroATxt,&listaParaColaDescendente);
+        printf("---------------------------------------------\n");
+        printf("Mostrar descedente: \n");
+        mostrarAscendenteODescendente(listaParaColaDescendente,colaDescendente);
+        printf("---------------------------------------------\n");
+        printf("Reducir horas manejo: \n");
+
 
     }
 
