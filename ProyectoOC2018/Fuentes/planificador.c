@@ -37,7 +37,7 @@ int fAscendente(TEntrada a,TEntrada b)
 
     if (*pa == *pb)
         salida= 0;
-    else if (*pa>*pb) /** ESTA LINEA ESTA CAMBIADA, HABIA PUESTO MAL LA CONDICION !! AHORA ANDA BIEN */
+    else if (*pa>*pb)
         salida = -1; /** PARA ASCENDENTE.. CLAVE(A) = 70 Y CLAVE(B) = 5 . EN ESTE CASO B TIENE MAS PRIORIDAD QUE A */
     else
         salida = 1;
@@ -136,6 +136,7 @@ void leerArchivo(char * txt,TLista *lista)
     int x= 0.0;
     int y= 0.0;
     TCiudad origen = malloc(sizeof(struct ciudad));
+    origen->nombre = malloc(50*sizeof(char));
     TCiudad nueva = POS_NULA;
     TLista listaDeCiudades = crear_lista();
     TPosicion pos = POS_NULA;
@@ -180,19 +181,22 @@ void leerArchivo(char * txt,TLista *lista)
 }
 
 /**
+ * Esta funcion tiene un problema al momento de calcular la distancia entre la ciudad origen y la destino, eso arrastra el error a lo que se muestra por pantalla
+ * y al orden de como se ven las ciudades.(no pude solucionarlo)
  * LLenara la colaDeCiudades con ciudades, donde la clave de su entrada sera la distancia entre la ciudad origen y la destino
  * y el valor sera la ciudad.
+ *
  */
-void mostrarAscendenteODescendente(TLista listaDeCiudades,TColaCP colaDeCiudades)
+int mostrarAscendenteODescendente(TLista listaDeCiudades,TColaCP colaDeCiudades)
 {
     TPosicion pos = l_ultima(listaDeCiudades);
     TCiudad ciudadOrigen = l_recuperar(listaDeCiudades,pos);
     TEntrada e = NULL;
-    float posX = ciudadOrigen->pos_x;
-    float posY = ciudadOrigen->pos_y;
+    float pX = ciudadOrigen->pos_x;
+    float pY = ciudadOrigen->pos_y;
     //printf("origen x: %.f y: %.f\n",ciudadOrigen->pos_x,ciudadOrigen->pos_y);
     l_eliminar(&listaDeCiudades,pos);
-
+    int totalRecorrido = 0;
 
     while(l_size(listaDeCiudades)>0)
     {
@@ -201,9 +205,11 @@ void mostrarAscendenteODescendente(TLista listaDeCiudades,TColaCP colaDeCiudades
 
         TCiudad ciudadDestino = l_recuperar(listaDeCiudades,l_ultima(listaDeCiudades));
 
-        float d = abs((float)(ciudadDestino->pos_x - posX) ) + abs((float)(ciudadDestino->pos_y - posY)) ;
+        float d = abs((float)(ciudadDestino->pos_x - pX) ) + abs((float)(ciudadDestino->pos_y - pY)) ;
+        //printf("d: %.f",d);
         *(float *)e->clave = d ;
        // printf("%.f \n",d);
+        totalRecorrido = totalRecorrido + d;
         e->valor = ciudadDestino;
         cp_insertar(colaDeCiudades,e);
         l_eliminar(&listaDeCiudades,l_ultima(listaDeCiudades));
@@ -216,22 +222,15 @@ void mostrarAscendenteODescendente(TLista listaDeCiudades,TColaCP colaDeCiudades
         TEntrada e = cp_eliminar(colaDeCiudades);
         TCiudad city = e->valor;
         printf("%d. %s\n",i+1,city->nombre);
+        free(e->clave);
+        free(e);
 
     }
 
-    free(e->clave);
-    free(e);
+
+    return totalRecorrido;
     //TEntrada eliminada = cp_eliminar(colaDeCiudades);
     //printf("%.f distancia ",*(float*)eliminada->clave);
-}
-
-void menu()
-{
-
-    //mostrarCiudadesAscendente();
-    //mostrarCiudadesDescendente();
-    //reducirHorasManejo();
-
 }
 
 
@@ -248,15 +247,16 @@ int main(int argc, char ** arreglo)
     TLista listaParaColaDescendente = crear_lista();
     TColaCP colaDeCiudades = crear_cola_cp(&fAscendente);
     TColaCP colaDescendente = crear_cola_cp(&fDescendente);
+    int horasDeManejo = 0;
 
-    if (argc != 2) /** NO RECIBI EL TXT */
+    if (argc != 2)
     {
         printf("Se aborto la ejecucion porque no se recibio el txt");
         exit(1);
     }
     else if( argc == 2)
     {
-        char * punteroATxt = arreglo[1]; /** arreglo[1] es "fede.txt" */
+        char * punteroATxt = arreglo[1];
         leerArchivo(punteroATxt, &listaDeCiudades);
         mostrarCiudades(listaDeCiudades);
         printf("---------------------------------------------\n");
@@ -265,17 +265,19 @@ int main(int argc, char ** arreglo)
         leerArchivo(punteroATxt,&listaParaColaDescendente);
         printf("---------------------------------------------\n");
         printf("Mostrar descedente: \n");
-        mostrarAscendenteODescendente(listaParaColaDescendente,colaDescendente);
+        horasDeManejo = mostrarAscendenteODescendente(listaParaColaDescendente,colaDescendente);
         printf("---------------------------------------------\n");
         printf("Reducir horas manejo: \n");
+        printf("Total Recorrido: %d\n",horasDeManejo);
+        /** DEBERIA TENER UN METODO QUE ME VAYA COMPARANDO LAS CIUDADES Y SU DISTANCIA Y ASI PODER MOSTRAR ESO POR PANTALLA
+            COMO ME ESTA FALLANDO LA FUNCION DE DISTANCIA NO PUEDO HACERLA. SE QUE ESTA MAL RETORNAR HORAS DE MANEJO EN MOSTRARASCENDENTEODESCENDENTE pero era la unica forma de guardar ese valor*/
 
 
+        free(listaDeCiudades);
+        free(colaDeCiudades);
+        free(listaParaColaDescendente);
+        free(colaDescendente);
     }
-
-
-
-
-
 
 
     return 0;
